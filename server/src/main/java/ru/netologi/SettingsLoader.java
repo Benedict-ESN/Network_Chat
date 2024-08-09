@@ -16,21 +16,21 @@ public class SettingsLoader {
     public SettingsLoader(String confPath, String commandsPath) throws IOException {
 
         // Преобразуем строку в Path объект
-        Path path = Paths.get(confPath);
+        Path confFilePath = Paths.get(confPath);
 
-        if (!Files.exists(path)) {
-            throw new IOException("Settings file not found: " + path.toAbsolutePath());
+        if (!Files.exists(confFilePath)) {
+            throw new IOException("Settings file not found: " + confFilePath.toAbsolutePath());
         }
 
-        try (var inputStream = Files.newInputStream(path)) {
+        try (var inputStream = Files.newInputStream(confFilePath)) {
             properties.load(inputStream);
         }
 //        loadCommands(commandsPath);
-        Path commandPath = Paths.get(commandsPath);
-        if (!Files.exists(commandPath)) {
-            throw new IOException("Commands file not found: " + commandPath.toAbsolutePath());
+        Path commandFilePath = Paths.get(commandsPath);
+        if (!Files.exists(commandFilePath)) {
+            throw new IOException("Commands file not found: " + commandFilePath.toAbsolutePath());
         }
-        List<String> lines = Files.readAllLines(path);
+        List<String> lines = Files.readAllLines(commandFilePath);
         commands.addAll(lines);
 
 

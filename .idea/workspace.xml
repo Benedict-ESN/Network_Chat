@@ -5,29 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb35df69-a988-44cf-85d9-c76f124cd849" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/serverconf.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/ru/netologi/ChatClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/ru/netologi/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/ru/netologi/ServerConfigLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/ru/netologi/ServerDetailsPrompter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/commands.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/settings.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/SettingsLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/SettingsLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/SettingsLoader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,9 +51,9 @@
   }
 }]]></component>
   <component name="RunManager" selected="Application.Main">
-    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ru.netologi.Main" />
-      <module name="Network-Chat.server.main" />
+      <module name="Network-Chat.client.main" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="ru.netologi.*" />
@@ -83,7 +66,7 @@
     </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ru.netologi.Main" />
-      <module name="Network-Chat.client.main" />
+      <module name="Network-Chat.server.main" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="ru.netologi.*" />

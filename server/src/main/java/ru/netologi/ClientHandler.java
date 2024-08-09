@@ -22,10 +22,9 @@ public class ClientHandler implements Runnable {
         this.clientSocket = socket;
         this.out = new PrintWriter(clientSocket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        this.commands = commands;
         if (commands == null) {
-            throw new IllegalStateException("Commands set must not be null.");
-        }
+            throw new IllegalStateException("Список команд пустой.");
+        } else {this.commands = commands;}
     }
 
     @Override
@@ -71,12 +70,14 @@ public class ClientHandler implements Runnable {
                 closeConnection();
                 return true;
             case "/list":
-                StringBuilder sb = new StringBuilder();
-                for (String cmd : commands) {
-                    if (!sb.isEmpty()) sb.append("\n ");  // добавляем разделитель между командами
-                    sb.append(cmd);
-                }
-                sendMessageToClient(this, sb.toString());
+
+//              System.out.println("Список команд загружен:\n" + Utils.makeCommandsList(commands));
+//                StringBuilder sb = new StringBuilder();
+//                for (String cmd : commands) {
+//                    if (!sb.isEmpty()) sb.append("\n ");  // добавляем разделитель между командами
+//                    sb.append(cmd);
+//                }
+                sendMessageToClient(this, Utils.makeCommandsList(commands));
                 return true;
             case "/help":
                 String msg = "Привет. Это краткая помощь по чтау. \n Выйти их чата: \" \\exit\" \n Получить список команд чата: \" \\list\"";
