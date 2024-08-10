@@ -26,7 +26,7 @@ public class ChatServer {
         try (ServerSocket testSocket = new ServerSocket(port)) {
             // Порт свободен, можно закрыть тестовый сокет и продолжить запуск сервера
         } catch (IOException e) {
-            System.err.println("Port " + port + " is already in use. Please choose another port. \n" + e);
+            System.err.println("Port " + port + " уже использукется. Выберете другой порт. \n" + e);
             return;
         }
 

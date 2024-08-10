@@ -10,7 +10,7 @@ public class ServerDetailsPrompter {
         Properties props = new Properties();
         BufferedReader systemIn = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Enter server address and port in format [IP address:port] or type 'localhost' for local server:");
+        System.out.println("Задайте IP адрес и порт сервера в одном из следующих форматов [IP address:port] или 'localhost:port' если сервер поднят локально:");
         String input = systemIn.readLine().trim();
 
         String serverAddress;

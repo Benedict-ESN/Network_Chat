@@ -1,26 +1,28 @@
 package ru.netologi;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Properties;
 
 public class ChatClient {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private final BufferedReader systemIn;
-    private String serverAddress;
-    private int serverPort;
+    private final BufferedReader systemIn = new BufferedReader(new InputStreamReader(System.in));
+    private final String serverAddress;
+    private final int serverPort;
 
     public ChatClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
-        this.systemIn = new BufferedReader(new InputStreamReader(System.in));
     }
 
     public void start() {
-
         try {
             connectToServer();
+            startListeningForMessages();
             handleUserInput();
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
@@ -29,32 +31,55 @@ public class ChatClient {
         }
     }
 
-
-
-    private void saveServerConfig() throws IOException {
-        Properties props = new Properties();
-        props.setProperty("serverAddress", serverAddress);
-        props.setProperty("serverPort", String.valueOf(serverPort));
-        props.store(new FileOutputStream("client/serverconf.conf"), null);
-    }
-
     private void connectToServer() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         System.out.println("Connected to the chat server");
 
-        System.out.println("Enter your username:");
         while (true) {
-            String username = systemIn.readLine().trim();
-            out.println(username);
-            String response = in.readLine();
-            if (response.equals("Welcome to the chat, " + username + "!")) {
-                System.out.println(response);
+            String serverMessage = in.readLine();
+            if (serverMessage.startsWith("SERVICE|Введите ваше имя пользователя")) {
+                System.out.println(serverMessage.substring(8));
+                String username = systemIn.readLine().trim();
+                if (username.equalsIgnoreCase("\\exit")) {
+                    out.println("\\exit");
+                    closeEverything();
+                    return;
+                }
+                out.println(username);
+            } else if (serverMessage.startsWith("SERVICE|200")) {
+                System.out.println("Вы успешно подключились к чату.");
                 break;
-            } else {
-                System.out.println(response);
+            } else if (serverMessage.startsWith("SERVICE|ERROR")) {
+                System.out.println(serverMessage.substring(8));
             }
+        }
+    }
+
+    private void startListeningForMessages() {
+        Thread listenerThread = new Thread(() -> {
+            try {
+                String serverMessage;
+                while ((serverMessage = in.readLine()) != null) {
+                    if (serverMessage.startsWith("SERVICE|")) {
+                        handleServiceMessage(serverMessage.substring(8));
+                    } else if (serverMessage.startsWith("CHAT|")) {
+                        System.out.println(serverMessage.substring(5));
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while listening for messages: " + e.getMessage());
+            }
+        });
+        listenerThread.start();
+    }
+
+    private void handleServiceMessage(String message) {
+        if (message.equals("Соединение закрыто по запросу клиента.") || message.equals("Соединение закрыто сервером.")) {
+            closeEverything();
+        } else {
+            System.out.println(message);
         }
     }
 
@@ -64,6 +89,7 @@ public class ChatClient {
             out.println(userInput);
         }
         out.println("\\exit");
+        closeEverything();
     }
 
     private void closeEverything() {
@@ -77,5 +103,4 @@ public class ChatClient {
             e.printStackTrace();
         }
     }
-
 }
