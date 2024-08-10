@@ -36,15 +36,22 @@ public class ChatServer {
             new Thread(this::handleConsoleInput).start();
 
             while (!serverSocket.isClosed()) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Прибыл новый клиент");
-                ClientHandler clientHandler = new ClientHandler(clientSocket, commands);
-//                clients.add(clientHandler);
-                new Thread(clientHandler).start();
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Прибыл новый клиент");
+                    ClientHandler clientHandler = new ClientHandler(clientSocket, commands);
+                    new Thread(clientHandler).start();
+                } catch (SocketException e) {
+                    if ("Socket closed".equals(e.getMessage())) {
+                        // Сокет был закрыт намеренно, выходим из цикла
+                        break;
+                    } else {
+                        throw e; // Неизвестная ошибка, выбрасываем исключение дальше
+                    }
+                }
             }
         } catch (IOException e) {
             System.err.println("Работу закончили: " + e.getMessage());
-            ;
         }
     }
 
@@ -55,7 +62,7 @@ public class ChatServer {
                 serverSocket.close();
             }
             pool.shutdownNow();
-            System.out.println("Server stopped.");
+            System.out.println("Работу закончили: Server stopped.");
         } catch (SocketException e1) {
             System.err.println("Error closing server: " + e1.getMessage());
         } catch (IOException e2) {
@@ -70,6 +77,7 @@ public class ChatServer {
                 String command = scanner.nextLine();
                 if (command.equalsIgnoreCase("exit")) {
                     stop();
+// TODO Реализовать корректное отключение всех клиентов при выключении сервера
                     break;
                 }
             }
