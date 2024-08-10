@@ -63,6 +63,7 @@ public class ChatClient {
                 String serverMessage;
                 while ((serverMessage = in.readLine()) != null) {
                     if (serverMessage.startsWith("SERVICE|")) {
+//                        System.out.println("!!!!!!!!!! "+serverMessage.substring(8));
                         handleServiceMessage(serverMessage.substring(8));
                     } else if (serverMessage.startsWith("CHAT|")) {
                         System.out.println(serverMessage.substring(5));
@@ -76,8 +77,9 @@ public class ChatClient {
     }
 
     private void handleServiceMessage(String message) {
-        if (message.equals("Соединение закрыто по запросу клиента.") || message.equals("Соединение закрыто сервером.")) {
-            closeEverything();
+        if (message.equals("The connection is closed at the request of the client.") || message.equals("server is closing.")) {
+            System.out.println(message);
+            closeEverything(message);
         } else {
             System.out.println(message);
         }
@@ -85,22 +87,23 @@ public class ChatClient {
 
     private void handleUserInput() throws IOException {
         String userInput;
-        while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
+        userInput = systemIn.readLine();
+//        while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
             out.println(userInput);
-        }
-        out.println("\\exit");
-        closeEverything();
+//        }
+//        out.println("\\exit");
+//        closeEverything();
     }
 
-    private void closeEverything() {
+    private void closeEverything(String message) {
         try {
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null) socket.close();
             if (systemIn != null) systemIn.close();
-            System.out.println("Connection closed.");
+            System.out.println(message);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
     }
 }

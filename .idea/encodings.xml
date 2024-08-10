@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/serverconf.conf" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/src/main/java/ru/netologi/ChatClient.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/src/main/java/ru/netologi/Main.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/src/main/java/ru/netologi/ServerConfigLoader.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/client/src/main/java/ru/netologi/ServerDetailsPrompter.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server-log.txt" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/server/commands.conf" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/settings.conf" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/ru/netologi/Main.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/ru/netologi/SettingsLoader.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server/src/main/java/ru/netologi/Utils.java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

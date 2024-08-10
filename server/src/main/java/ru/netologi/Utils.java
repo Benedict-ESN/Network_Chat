@@ -1,6 +1,8 @@
 package ru.netologi;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Utils {
 
     public static String makeCommandsList(HashSet<String> commands) {
@@ -10,6 +12,9 @@ public class Utils {
             sb.append(cmd);
         }
         return sb.toString();
+    }
+    public static String makeUsersList(ConcurrentHashMap clientHandlers) {
+        return "Лист";
     }
 
 }

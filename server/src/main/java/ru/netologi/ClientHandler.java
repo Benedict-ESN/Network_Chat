@@ -12,17 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler implements Runnable {
 
-    private static final ConcurrentHashMap<String, ClientHandler> clientHandlers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ClientHandler> clientHandlers;
     private final Socket clientSocket;
     private final PrintWriter out;
     private final BufferedReader in;
     private final HashSet<String> commands;
     private String clientName;
 
-    public ClientHandler(Socket socket, HashSet<String> commands) throws IOException {
+    public ClientHandler(Socket socket, HashSet<String> commands, ConcurrentHashMap<String, ClientHandler> clientHandlers) throws IOException {
         this.clientSocket = socket;
         this.out = new PrintWriter(clientSocket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.clientHandlers = clientHandlers;
         if (commands == null) {
             throw new IllegalStateException("Список команд пустой.");
         } else {
@@ -38,12 +39,12 @@ public class ClientHandler implements Runnable {
                 sendMessageToClient(this, "SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):");
                 clientName = in.readLine();
 
-                if (clientName == null || clientName.equalsIgnoreCase("\\exit")) {
-                    closeConnection("SERVICE|Соединение закрыто по запросу клиента.");
+                if (clientName.equalsIgnoreCase("\\exit")) {
+                    closeConnection("SERVICE|The connection is closed at the request of the client.");
                     return;
                 }
 
-                if (isNameValid(clientName) && !isNameTaken(clientName)) {
+                if (clientName == null || (isNameValid(clientName) && !isNameTaken(clientName))) {
                     synchronized (clientHandlers) {
                         clientHandlers.put(clientName, this);
                     }
@@ -59,17 +60,20 @@ public class ClientHandler implements Runnable {
             // Начало обработки сообщений от клиента
             String message;
             while ((message = in.readLine()) != null) {
-                if (message.equalsIgnoreCase("\\exit")) {
-                    closeConnection("SERVICE|Клиент отключился.");
-                    break;
-                }
+//                if (message.equalsIgnoreCase("\\exit")) {
+//                    closeConnection("SERVICE|Клиент отключился.");
+//                    break;
+//                }
+// TODO починить команды чата. Они не работают и игнорируются.
 
                 if (commands.contains(message.toLowerCase())) {
                     if (!runCommand(message)) {
                         sendMessageToClient(this, "SERVICE|Команда еще не реализована.");
                     }
                 } else {
-                    broadcastMessage("CHAT|" + clientName + ": " + message);
+                    broadcastMessage("CHAT|"
+                            //+ clientName
+                            + ": " + message);
                 }
             }
 
@@ -85,42 +89,54 @@ public class ClientHandler implements Runnable {
     }
 
     private boolean runCommand(String command) {
+        String msg;
         switch (command.toLowerCase()) {
-            case "/exit":
+            case "\\exit":
                 closeConnection("SERVICE|Клиент отключился.");
                 return true;
-            case "/list":
+            case "\\list":
                 sendMessageToClient(this, "CHAT|" + Utils.makeCommandsList(commands));
                 return true;
-            case "/help":
-                String msg = "CHAT|Привет. Это краткая помощь по чату. \n Выйти из чата: \" \\exit\" \n Получить список команд чата: \" \\list\"";
+            case "\\help":
+                msg = "CHAT|Привет. Это краткая помощь по чату. \n Выйти из чата: \" \\exit\" \n Получить список команд чата: \" \\list\"";
+                sendMessageToClient(this, msg);
+                return true;
+            case "\\users":
+// TODO реализовать список клиентов чата
+
+                msg = "CHAT|тут будет список клиентов чата:"+Utils.makeUsersList(clientHandlers);
                 sendMessageToClient(this, msg);
                 return true;
             default:
-                return false;  // Команда еще не реализована
+                sendMessageToClient(this, "SERVICE|Команда не распознана.");
+                return false;  // Команда не распознана, но соединение не должно закрываться
         }
     }
-// serverMessage.substring(5)
-private void broadcastMessage(String message) {
-    // Получаем текущее время сервера
-    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-    // Добавляем время и имя отправителя к сообщению
-    String formattedMessage = String.format("[%s] %s: %s", timestamp, clientName, message.substring(5));
+    private void broadcastMessage(String message) {
+        // Получаем текущее время сервера
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-    // Выводим сообщение на сервере для администрирования
-    System.out.println("@All: " + formattedMessage);
+        // Добавляем время и имя отправителя к сообщению
+        String formattedMessage = String.format("[%s] @All:  %s: %s", timestamp, clientName, message.substring(5));
+        // Логируем сообщение
+        ServerLogger.log(formattedMessage);
 
-    synchronized (clientHandlers) {
-        for (ClientHandler clientHandler : clientHandlers.values()) {
-            if (clientHandler != this) { // Проверяем, не является ли это клиентом, отправившим сообщение
-                clientHandler.out.println("CHAT|" + formattedMessage);
+        // Выводим сообщение на сервере для администрирования
+        System.out.println(formattedMessage);
+
+        synchronized (clientHandlers) {
+            for (ClientHandler clientHandler : clientHandlers.values()) {
+                if (clientHandler != this) { // Проверяем, не является ли это клиентом, отправившим сообщение
+                    clientHandler.out.println("CHAT|" + formattedMessage);
+                }
             }
         }
     }
-}
 
     private void sendMessageToClient(ClientHandler targetClient, String message) {
+        // Логируем сообщение перед отправкой
+        ServerLogger.log("To " + targetClient.clientName + ": " + message);
         targetClient.out.println(message);
     }
 
@@ -128,20 +144,21 @@ private void broadcastMessage(String message) {
         return clientHandlers.containsKey(name);
     }
 
-private void closeConnection(String reason) {
-    try {
-        sendMessageToClient(this, reason);
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            synchronized (clientHandlers) {
-                clientHandlers.remove(clientName);
+    public void closeConnection(String reason) {
+        try {
+            sendMessageToClient(this, reason);  // Сообщаем клиенту причину закрытия
+            if (clientSocket != null && !clientSocket.isClosed()) {
+                in.close();
+                out.close();
+                clientSocket.close();
+                synchronized (clientHandlers) {
+                    clientHandlers.remove(clientName);
+                }
+                System.out.println("SYSTEM MSG|Connection with " + clientName + " closed.");
             }
-            in.close();
-            out.close();
-            clientSocket.close();
             broadcastMessage("CHAT|" + this.clientName + " покинул чат.");
+        } catch (IOException e) {
+            System.err.println("Ошибка при закрытии соединения! Досвидания! \n" + e);
         }
-    } catch (IOException e) {
-        System.err.println("Ошибка при закрытии соединения! Досвидания! \n" + e);
     }
-}
 }
