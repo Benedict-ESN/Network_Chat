@@ -27,7 +27,7 @@ public class ChatClient {
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
-            closeEverything();
+            closeEverything("Мы всё завершили.");
         }
     }
 
@@ -44,7 +44,7 @@ public class ChatClient {
                 String username = systemIn.readLine().trim();
                 if (username.equalsIgnoreCase("\\exit")) {
                     out.println("\\exit");
-                    closeEverything();
+                    closeEverything("Вы решили уйти по-английски");
                     return;
                 }
                 out.println(username);

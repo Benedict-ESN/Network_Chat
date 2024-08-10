@@ -1,0 +1,18 @@
+���. 10, 2024 10:42:50 PM ru.netologi.ServerLogger log
+INFO: To null: SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):
+���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
+INFO: To 123: SERVICE|200
+���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
+INFO: To 123: CHAT|Добро пожаловать в чат, 123!
+���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
+INFO: [2024-08-10 22:42:56] @All:  123: 123 присоединился к чату.
+���. 10, 2024 10:42:58 PM ru.netologi.ServerLogger log
+INFO: [2024-08-10 22:42:58] @All:  123: : Рш
+���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
+INFO: To 123: SERVICE|server is closing.
+���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
+INFO: To 123: SERVICE|Соединение закрыто сервером.
+���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
+INFO: [2024-08-10 22:43:11] @All:  123: 123 покинул чат.
+���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
+INFO: [2024-08-10 22:43:11] @All:  123: 123 покинул чат.
