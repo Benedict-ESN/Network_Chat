@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -99,14 +101,24 @@ public class ClientHandler implements Runnable {
         }
     }
 // serverMessage.substring(5)
-    private void broadcastMessage(String message) {
-        System.out.println("Broadcasting message: " + message.substring(5)); // Вывод сообщения в консоль сервера
-        synchronized (clientHandlers) {
-            for (ClientHandler clientHandler : clientHandlers.values()) {
-                clientHandler.out.println(message);
+private void broadcastMessage(String message) {
+    // Получаем текущее время сервера
+    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+    // Добавляем время и имя отправителя к сообщению
+    String formattedMessage = String.format("[%s] %s: %s", timestamp, clientName, message.substring(5));
+
+    // Выводим сообщение на сервере для администрирования
+    System.out.println("@All: " + formattedMessage);
+
+    synchronized (clientHandlers) {
+        for (ClientHandler clientHandler : clientHandlers.values()) {
+            if (clientHandler != this) { // Проверяем, не является ли это клиентом, отправившим сообщение
+                clientHandler.out.println("CHAT|" + formattedMessage);
             }
         }
     }
+}
 
     private void sendMessageToClient(ClientHandler targetClient, String message) {
         targetClient.out.println(message);
@@ -116,20 +128,20 @@ public class ClientHandler implements Runnable {
         return clientHandlers.containsKey(name);
     }
 
-    private void closeConnection(String reason) {
+private void closeConnection(String reason) {
+    try {
         sendMessageToClient(this, reason);
-        try {
-            if (clientSocket != null && !clientSocket.isClosed()) {
-                synchronized (clientHandlers) {
-                    clientHandlers.remove(this);
-                }
-                in.close();
-                out.close();
-                clientSocket.close();
-                broadcastMessage("CHAT|" + this.clientName + " покинул чат.");
+        if (clientSocket != null && !clientSocket.isClosed()) {
+            synchronized (clientHandlers) {
+                clientHandlers.remove(clientName);
             }
-        } catch (IOException e) {
-            System.err.println("Ошибка при закрытии соединения! Досвидания! \n" + e);
+            in.close();
+            out.close();
+            clientSocket.close();
+            broadcastMessage("CHAT|" + this.clientName + " покинул чат.");
         }
+    } catch (IOException e) {
+        System.err.println("Ошибка при закрытии соединения! Досвидания! \n" + e);
     }
+}
 }
