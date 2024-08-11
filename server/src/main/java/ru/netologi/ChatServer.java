@@ -27,7 +27,7 @@ public class ChatServer {
             System.err.println("Port " + port + " уже использукется. Выберете другой порт. \n" + e);
             return;
         }
-
+//TODO упрости проверку на занятый порт. Заменить IOException e на вменяемое исключение. Обойтись без тестового сокета.
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started on port: " + port);
@@ -55,15 +55,16 @@ public class ChatServer {
                     }
                 }
             }
-                if (serverSocket != null && !serverSocket.isClosed()) {
-                    serverSocket.close();
-                }
-                pool.shutdownNow();
-                System.out.println("Сервер остановлен.");
-            } catch(IOException e){
-                System.err.println("Error closing server: " + e.getMessage());
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
             }
+            pool.shutdownNow();
+//TODO сюда вставить паузу
+            System.out.println("Сервер остановлен.");
+        } catch (IOException e) {
+            System.err.println("Error closing server: " + e.getMessage());
         }
+    }
 
     // Поток для обработки ввода с консоли
     private void handleConsoleInput() {

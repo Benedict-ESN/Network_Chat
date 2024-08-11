@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ChatClient {
     private Socket socket;
@@ -23,7 +24,7 @@ public class ChatClient {
         try {
             connectToServer();
             startListeningForMessages();
-            handleUserInput();
+            handleUserInput(); // в отдельный поток
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
@@ -39,7 +40,7 @@ public class ChatClient {
 
         while (true) {
             String serverMessage = in.readLine();
-            if (serverMessage.startsWith("SERVICE|Введите ваше имя пользователя")) {
+            if (serverMessage.startsWith("SERVICE|Введите")) {
                 System.out.println(serverMessage.substring(8));
                 String username = systemIn.readLine().trim();
                 if (username.equalsIgnoreCase("\\exit")) {
@@ -69,14 +70,21 @@ public class ChatClient {
                         System.out.println(serverMessage.substring(5));
                     }
                 }
+            } catch (SocketException e) {
+                //               System.out.println("Это текст метода startListeningForMessages: Connection lost: " + e.getMessage());
+                closeEverything("Потеря соединения");
+// TODO добавил SocketException для проверки разрыва соединения. Потом доработать поытку повторного подключения.
             } catch (IOException e) {
                 System.out.println("An error occurred while listening for messages: " + e.getMessage());
+                closeEverything("Потеря соединения");
             }
+
         });
         listenerThread.start();
     }
 
     private void handleServiceMessage(String message) {
+
         if (message.equals("The connection is closed at the request of the client.") || message.equals("server is closing.")) {
             System.out.println(message);
             closeEverything(message);
@@ -87,23 +95,23 @@ public class ChatClient {
 
     private void handleUserInput() throws IOException {
         String userInput;
-        userInput = systemIn.readLine();
-//        while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
-            out.println(userInput);
-//        }
+        while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
+            if (!userInput.trim().isEmpty()) {
+                out.println(userInput);
+            }
+        }
 //        out.println("\\exit");
-//        closeEverything();
+        closeEverything("Попросили выйти.");
     }
 
     private void closeEverything(String message) {
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null) socket.close();
-            if (systemIn != null) systemIn.close();
+            // Проверить, надо ли тут всё закрывать, если сокет уже закрыт.
+            if (socket != null && !socket.isClosed()) socket.close();
+            systemIn.close();
             System.out.println(message);
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("Ошибка при закрытии ресурсов: " + e.getMessage());
         }
     }
 }
