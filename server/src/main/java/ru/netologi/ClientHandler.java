@@ -31,10 +31,6 @@ public class ClientHandler implements Runnable {
             this.commands = commands;
         }
     }
-
-
-// TODO Разбить RUN на несколько методов.
-
     @Override
     public void run() {
         try {
@@ -45,7 +41,6 @@ public class ClientHandler implements Runnable {
             closeConnection("SERVICE|Соединение закрыто сервером.");
         }
     }
-
     // Обработка регистрации клиента и получения его имени
     private void handleClientRegistration() throws IOException {
         while (true) {
@@ -57,7 +52,7 @@ public class ClientHandler implements Runnable {
                 return;
             }
 
-            if (clientName == null || (isNameValid(clientName) && !isNameTaken(clientName))) {
+            if (clientName.isEmpty() || (isNameValid(clientName) && !isNameTaken(clientName))) {
                 synchronized (clientHandlers) {
                     clientHandlers.put(clientName, this);
                 }
@@ -102,66 +97,6 @@ public class ClientHandler implements Runnable {
         });
         messageListenerThread.start();
     }
-
-
-//    public void run() {
-//
-
-//        try {
-//            // Запрос имени клиента
-//            while (true) {
-//                sendMessageToClient(this, "SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):");
-//                clientName = in.readLine();
-//
-//                if (clientName.equalsIgnoreCase("\\exit")) {
-//                    closeConnection("SERVICE|The connection is closed at the request of the client.");
-//                    return;
-//                }
-//
-//                if (clientName == null || (isNameValid(clientName) && !isNameTaken(clientName))) {
-//                    synchronized (clientHandlers) {
-//                        clientHandlers.put(clientName, this);
-//                    }
-//                    sendMessageToClient(this, "SERVICE|200"); // Код успешного подключения
-//                    sendMessageToClient(this, "CHAT|Добро пожаловать в чат, " + clientName + "!");
-//                    broadcastMessage("CHAT|" + clientName + " присоединился к чату.");
-//                    break;
-//                } else {
-//                    sendMessageToClient(this, "SERVICE|ERROR: Недопустимое имя или имя уже используется. Попробуйте другое.");
-//                }
-//            }
-//
-//            // Начало обработки сообщений от клиента
-//            String message;
-//            while ((message = in.readLine()) != null) {
-////                if (message.equalsIgnoreCase("\\exit")) {
-////                    closeConnection("SERVICE|Клиент отключился.");
-////                    break;
-////                }
-//// TODO починить команды чата. Они не работают и игнорируются. Заперетить обрабатывать пустые сообщения.
-//
-//                if (commands.contains(message.toLowerCase())) {
-//                    if (!runCommand(message)) {
-//                        sendMessageToClient(this, "SERVICE|Команда еще не реализована.");
-//                    }
-//                } else {
-//                    broadcastMessage("CHAT|"
-//                            //+ clientName
-//                            + ": " + message);
-//                }
-//            }
-//
-//        } catch (SocketException e) {
-//            closeConnection("________");
-//
-////            System.err.println("Ошибка! Досвидания! \n" + e);
-//        } catch (IOException e) {
-//            System.err.println("Ошибка! Досвидания! \n" + e);
-//        } finally {
-//            closeConnection("SERVICE|Соединение закрыто сервером.");
-//        }
-//    }
-
     private boolean isNameValid(String name) {
         // Проверка: имя состоит из допустимых символов и его длина не превышает 12 символов
         return name.matches("^[a-zA-Z0-9_-]+$") && name.length() <= 12;
