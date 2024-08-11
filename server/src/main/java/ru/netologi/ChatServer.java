@@ -36,7 +36,8 @@ public class ChatServer {
             while (!serverSocket.isClosed()) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Прибыл новый клиент");
-                ClientHandler clientHandler = new ClientHandler(clientSocket, commands, clientHandlers);
+                String sessionId = Utils.generateSessionId(clientSocket);
+                ClientHandler clientHandler = new ClientHandler(clientSocket, commands, clientHandlers, sessionId);
                 pool.execute(clientHandler);
             }
         } catch (IOException e) {

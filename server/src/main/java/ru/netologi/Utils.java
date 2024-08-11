@@ -2,6 +2,9 @@ package ru.netologi;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.net.Socket;
+import java.util.UUID;
+
 
 public class Utils {
 
@@ -24,6 +27,12 @@ public class Utils {
                 }
         return clientNames.toString();
     }
+
+        public static String generateSessionId(Socket socket) {
+            String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            UUID uuid = UUID.nameUUIDFromBytes(clientInfo.getBytes());
+            return uuid.toString();
+        }
 
 
 

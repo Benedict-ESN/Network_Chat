@@ -1,23 +1,25 @@
 package ru.netologi;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
 public class ChatClient {
     private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    //    private PrintWriter out;
+//    private BufferedReader in;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     private final BufferedReader systemIn = new BufferedReader(new InputStreamReader(System.in));
     private final String serverAddress;
+    private String clientName;
     private final int serverPort;
+    private String sessionID = "";
 
     public ChatClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
+        this.clientName = "Guest";
     }
 
     public void start() {
@@ -25,35 +27,39 @@ public class ChatClient {
             connectToServer();
             startListeningForMessages();
             handleUserInput(); // в отдельный поток
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
             closeEverything("Мы всё завершили.");
         }
     }
 
-    private void connectToServer() throws IOException {
+    private void connectToServer() throws IOException, ClassNotFoundException {
         socket = new Socket(serverAddress, serverPort);
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
         System.out.println("Connected to the chat server");
 
         while (true) {
-            String serverMessage = in.readLine();
-            if (serverMessage.startsWith("SERVICE|Введите")) {
-                System.out.println(serverMessage.substring(8));
-                String username = systemIn.readLine().trim();
+            String username;
+            Message serverMessage = (Message) in.readObject();
+            if (sessionID.isEmpty()){ sessionID = serverMessage.getSessionId();}
+            if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getContent().startsWith("Введите")) {
+                System.out.println(serverMessage.getContent());
+                username = systemIn.readLine().trim();
                 if (username.equalsIgnoreCase("\\exit")) {
-                    out.println("\\exit");
+                    out.writeObject(new Message(clientName, sessionID, "SERVICE", "\\exit"));
                     closeEverything("Вы решили уйти по-английски");
                     return;
                 }
-                out.println(username);
-            } else if (serverMessage.startsWith("SERVICE|200")) {
+                System.out.println("Я ввёл имя: " + username);
+                out.writeObject(new Message(clientName, sessionID, "SERVICE", username));
+            } else if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getContent().startsWith("200")) {
+                clientName = serverMessage.getClientName();
                 System.out.println("Вы успешно подключились к чату.");
                 break;
-            } else if (serverMessage.startsWith("SERVICE|ERROR")) {
-                System.out.println(serverMessage.substring(8));
+            } else if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getContent().startsWith("ERROR")) {
+                System.out.println(serverMessage.getContent());
             }
         }
     }
@@ -61,35 +67,36 @@ public class ChatClient {
     private void startListeningForMessages() {
         Thread listenerThread = new Thread(() -> {
             try {
-                String serverMessage;
-                while ((serverMessage = in.readLine()) != null) {
-                    if (serverMessage.startsWith("SERVICE|")) {
-//                        System.out.println("!!!!!!!!!! "+serverMessage.substring(8));
-                        handleServiceMessage(serverMessage.substring(8));
-                    } else if (serverMessage.startsWith("CHAT|")) {
-                        System.out.println(serverMessage.substring(5));
+//                String serverMessage;
+                Message message;
+                while ((message = (Message) in.readObject()) != null) {
+                    if (message.getCategory().equalsIgnoreCase("Service")) {
+                        handleServiceMessage(message.getContent());
+                    } else if (message.getCategory().equalsIgnoreCase("Chat")) {
+                        System.out.println(message.getTimestamp() + " " + message.getClientName() + ": " + message.getContent());
                     }
                 }
             } catch (SocketException e) {
-                //               System.out.println("Это текст метода startListeningForMessages: Connection lost: " + e.getMessage());
+//              System.out.println("Это текст метода startListeningForMessages: Connection lost: " + e.getMessage());
                 closeEverything("Потеря соединения");
 // TODO добавил SocketException для проверки разрыва соединения. Потом доработать поытку повторного подключения.
             } catch (IOException e) {
                 System.out.println("An error occurred while listening for messages: " + e.getMessage());
                 closeEverything("Потеря соединения");
+            } catch (ClassNotFoundException e) {
+                System.err.println("Критическая ошибка: Не найден необходимый класс. Программа завершает работу." + e.getMessage());
             }
-
         });
         listenerThread.start();
     }
 
-    private void handleServiceMessage(String message) {
+    private void handleServiceMessage(String serviceMessage) {
 
-        if (message.equals("The connection is closed at the request of the client.") || message.equals("server is closing.")) {
-            System.out.println(message);
-            closeEverything(message);
+        if (serviceMessage.equals("The connection is closed at the request of the client.") || serviceMessage.equals("server is closing.")) {
+            System.out.println(serviceMessage);
+            closeEverything(serviceMessage);
         } else {
-            System.out.println(message);
+            System.out.println(serviceMessage);
         }
     }
 
@@ -97,10 +104,10 @@ public class ChatClient {
         String userInput;
         while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
             if (!userInput.trim().isEmpty()) {
-                out.println(userInput);
+                out.writeObject(new Message(clientName, sessionID, "CHAT", userInput));
+                out.flush();
             }
         }
-//        out.println("\\exit");
         closeEverything("Попросили выйти.");
     }
 
