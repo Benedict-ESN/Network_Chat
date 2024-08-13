@@ -21,13 +21,13 @@ public class ChatServer {
     }
 
     public void start() {
-        try (ServerSocket testSocket = new ServerSocket(port)) {
-            // Порт свободен, можно закрыть тестовый сокет и продолжить запуск сервера
-        } catch (IOException e) {
-            System.err.println("Port " + port + " уже использукется. Выберете другой порт. \n" + e);
-            return;
-        }
-//TODO упрости проверку на занятый порт. Заменить IOException e на вменяемое исключение. Обойтись без тестового сокета.
+//        try (ServerSocket testSocket = new ServerSocket(port)) {
+//            // Порт свободен, можно закрыть тестовый сокет и продолжить запуск сервера
+//        } catch (IOException e) {
+//            System.err.println("Port " + port + " уже использукется. Выберете другой порт. \n" + e);
+//            return;
+//        }
+//Упростил проверку на занятый порт.
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started on port: " + port);
@@ -40,8 +40,13 @@ public class ChatServer {
                 ClientHandler clientHandler = new ClientHandler(clientSocket, commands, clientHandlers, sessionId);
                 pool.execute(clientHandler);
             }
+
         } catch (IOException e) {
-            System.err.println("Работу закончили: " + e.getMessage());
+            if (e.getMessage().contains("Address already in use")) {
+                System.out.println("Port " + port + " уже используется. Выберите другой порт.");
+            } else {
+                System.err.println("Работу закончили: " + e.getMessage());
+            }
         }
     }
 
@@ -60,7 +65,16 @@ public class ChatServer {
                 serverSocket.close();
             }
             pool.shutdownNow();
-//TODO сюда вставить паузу
+//Вставил паузу для спокойного закрытия всех соединений
+            try {
+                // Пауза в 3000 миллисекунд
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                System.err.println("Поток был прерван во время паузы: " + e.getMessage());
+
+            }
+
+
             System.out.println("Сервер остановлен.");
         } catch (IOException e) {
             System.err.println("Error closing server: " + e.getMessage());

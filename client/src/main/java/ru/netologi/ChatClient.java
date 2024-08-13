@@ -43,7 +43,9 @@ public class ChatClient {
         while (true) {
             String username;
             Message serverMessage = (Message) in.readObject();
-            if (sessionID.isEmpty()){ sessionID = serverMessage.getSessionId();}
+            if (sessionID.isEmpty()) {
+                sessionID = serverMessage.getSessionId();
+            }
             if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getContent().startsWith("Введите")) {
                 System.out.println(serverMessage.getContent());
                 username = systemIn.readLine().trim();
@@ -79,7 +81,8 @@ public class ChatClient {
             } catch (SocketException e) {
 //              System.out.println("Это текст метода startListeningForMessages: Connection lost: " + e.getMessage());
                 closeEverything("Потеря соединения");
-// TODO добавил SocketException для проверки разрыва соединения. Потом доработать поытку повторного подключения.
+// добавил SocketException для проверки разрыва соединения.
+// TODO Потом доработать поытку повторного подключения.
             } catch (IOException e) {
                 System.out.println("An error occurred while listening for messages: " + e.getMessage());
                 closeEverything("Потеря соединения");
