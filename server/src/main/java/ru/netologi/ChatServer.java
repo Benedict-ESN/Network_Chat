@@ -57,7 +57,7 @@ public class ChatServer {
                 if (!clientHandlers.isEmpty()) {
                     System.out.println("Отключение всех клиентов...");
                     for (ClientHandler clientHandler : clientHandlers.values()) {
-                        clientHandler.closeConnection("SERVICE|server is closing.");
+                        clientHandler.closeConnection("SERVICE|402|server is closing.");
                     }
                 }
             }
@@ -68,7 +68,7 @@ public class ChatServer {
 //Вставил паузу для спокойного закрытия всех соединений
             try {
                 // Пауза в 3000 миллисекунд
-                Thread.sleep(5000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 System.err.println("Поток был прерван во время паузы: " + e.getMessage());
 

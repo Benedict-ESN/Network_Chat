@@ -50,13 +50,13 @@ public class ChatClient {
                 System.out.println(serverMessage.getContent());
                 username = systemIn.readLine().trim();
                 if (username.equalsIgnoreCase("\\exit")) {
-                    out.writeObject(new Message(clientName, sessionID, "SERVICE", "\\exit"));
+                    out.writeObject(new Message(clientName, sessionID, "SERVICE",500, "\\exit"));
                     closeEverything("Вы решили уйти по-английски");
                     return;
                 }
                 System.out.println("Я ввёл имя: " + username);
-                out.writeObject(new Message(clientName, sessionID, "SERVICE", username));
-            } else if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getContent().startsWith("200")) {
+                out.writeObject(new Message(clientName, sessionID, "SERVICE", 102,username));
+            } else if (serverMessage.getCategory().equals("SERVICE") && serverMessage.getServiceCode()==200) {
                 clientName = serverMessage.getClientName();
                 System.out.println("Вы успешно подключились к чату.");
                 break;
@@ -73,17 +73,19 @@ public class ChatClient {
                 Message message;
                 while ((message = (Message) in.readObject()) != null) {
                     if (message.getCategory().equalsIgnoreCase("Service")) {
-                        handleServiceMessage(message.getContent());
+                        handleServiceMessage(message.getServiceCode(), message.getContent());
                     } else if (message.getCategory().equalsIgnoreCase("Chat")) {
                         System.out.println(message.getTimestamp() + " " + message.getClientName() + ": " + message.getContent());
                     }
                 }
             } catch (SocketException e) {
+
 //              System.out.println("Это текст метода startListeningForMessages: Connection lost: " + e.getMessage());
                 closeEverything("Потеря соединения");
 // добавил SocketException для проверки разрыва соединения.
 // TODO Потом доработать поытку повторного подключения.
             } catch (IOException e) {
+// Вот в этом месте происходит странное: если сервер принудительно разрывает соединение (команда exit в консоле), то клиент не завершает работу сразу: выводи тошибку An error occurred while listening for messages: потом ждёт ввода сообщения от пользователя, и только потом выводит  "Потеря соединения".
                 System.out.println("An error occurred while listening for messages: " + e.getMessage());
                 closeEverything("Потеря соединения");
             } catch (ClassNotFoundException e) {
@@ -93,13 +95,14 @@ public class ChatClient {
         listenerThread.start();
     }
 
-    private void handleServiceMessage(String serviceMessage) {
-
-        if (serviceMessage.equals("The connection is closed at the request of the client.") || serviceMessage.equals("server is closing.")) {
-            System.out.println(serviceMessage);
-            closeEverything(serviceMessage);
+    private void handleServiceMessage(int serviceCode, String Content) {
+// TODO заменить проверку текста на проверку кода. Внести в Message ещё один параметр - сервисный код/
+//        if (serviceCode.equals("The connection is closed at the request of the client.") || serviceMessage.equals("server is closing.")) {
+        if (serviceCode==500 || serviceCode==400 || serviceCode==401) {
+            System.out.println(Content);
+            closeEverything(Content);
         } else {
-            System.out.println(serviceMessage);
+            System.out.println(Content);
         }
     }
 
@@ -107,9 +110,14 @@ public class ChatClient {
         String userInput;
         while (!(userInput = systemIn.readLine()).equalsIgnoreCase("\\exit")) {
             if (!userInput.trim().isEmpty()) {
-                out.writeObject(new Message(clientName, sessionID, "CHAT", userInput));
+                out.writeObject(new Message(clientName, sessionID, "CHAT", 102, userInput));
                 out.flush();
             }
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.err.println("Поток был прерван: " + e.getMessage());
         }
         closeEverything("Попросили выйти.");
     }

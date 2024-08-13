@@ -9,13 +9,15 @@ public class Message implements Serializable {
     private final String sessionId;
     private final String category;  // "Server" или "Chat"
     private final String content;
+    private final int serviceCode;
 
-    public Message(String clientName, String sessionId, String category, String message) {
+    public Message(String clientName, String sessionId, String category, int serviceCode,String message) {
         this.timestamp = LocalDateTime.now();
         this.clientName = clientName;
         this.sessionId = sessionId;
         this.category = category;
         this.content = message;
+        this.serviceCode = serviceCode;
     }
 
     public LocalDateTime getTimestamp() {
@@ -36,6 +38,9 @@ public class Message implements Serializable {
 
     public String getContent() {
         return content;
+    }
+    public int getServiceCode() {
+        return serviceCode;
     }
 
     @Override

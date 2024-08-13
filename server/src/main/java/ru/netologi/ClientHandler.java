@@ -5,8 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,8 +43,8 @@ public class ClientHandler implements Runnable {
             handleClientRegistration();
             startMessageListener();
         } catch (IOException e) {
-            System.err.println("Ошибка! Досвидания! \n" + e.getMessage());
-            closeConnection("SERVICE|Соединение закрыто сервером.");
+            System.err.println("Ошибка! Досвидания! 1 \n" + e.getMessage());
+            closeConnection("SERVICE|101|Соединение закрыто сервером.");
         }
     }
 
@@ -55,24 +53,23 @@ public class ClientHandler implements Runnable {
         try {
             while (true) {
                 System.out.println("Для проверки: " + sessionId);
-                sendMessageToClient(this, "SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):");
+                sendMessageToClient(this, "SERVICE|101|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):");
 
                 clientName = ((Message) in.readObject()).getContent();
                 if (clientName.equalsIgnoreCase("\\exit")) {
-                    closeConnection("SERVICE|The connection is closed at the request of the client.");
+                    closeConnection("SERVICE|500|The connection is closed at the request of the client.");
                     return;
                 }
-                // А где обработка clientName.isEmpty()   ???? Или она не нужна?
                 if (isNameValid(clientName) && !isNameTaken(clientName)) {
                     synchronized (clientHandlers) {
                         clientHandlers.put(clientName, this);
                     }
-                    sendMessageToClient(this, "SERVICE|200"); // Код успешного подключения
-                    sendMessageToClient(this, "CHAT|Добро пожаловать в чат, " + clientName + "!");
-                    broadcastMessage("CHAT|" + clientName + " присоединился к чату.");
+                    sendMessageToClient(this, "SERVICE|200| "); // Код успешного подключения
+                    sendMessageToClient(this, "CHAT|101|Добро пожаловать в чат, " + clientName + "!");
+                    broadcastMessage("CHAT|102|" + clientName + " присоединился к чату.");
                     break;
                 } else {
-                    sendMessageToClient(this, "SERVICE|ERROR: Недопустимое имя или имя уже используется. Попробуйте другое.");
+                    sendMessageToClient(this, "SERVICE|101|ERROR: Недопустимое имя или имя уже используется. Попробуйте другое.");
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -90,28 +87,29 @@ public class ClientHandler implements Runnable {
                     String message = receivedMessage.getContent();
 
                     if (message.equalsIgnoreCase("\\exit")) {
-                        closeConnection("SERVICE|Клиент отключился.");
+                        closeConnection("SERVICE|101|Клиент отключился.");
                         break;
                     }
                     if (!message.trim().isEmpty()) {
                         if (commands.contains(message.toLowerCase())) {
                             if (!runCommand(message)) {
-                                sendMessageToClient(this, "SERVICE|Команда еще не реализована.");
+                                sendMessageToClient(this, "SERVICE|101|Команда еще не реализована.");
                             }
                         } else {
-                            broadcastMessage("CHAT|"
+                            broadcastMessage("CHAT|102|"
                                     // + clientName
                                     + ": " + message);
                         }
                     }
                 }
             } catch (SocketException e) {
-                closeConnection("SERVICE|Соединение закрыто сервером.");
+                closeConnection("SERVICE|101|Соединение закрыто сервером.");
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
-                System.err.println("Ошибка! Досвидания! \n" + e);
-                closeConnection("SERVICE|Соединение закрыто сервером.");
+// Если на клиенте дают команду /exit, выбрасывается именно эта ошибка, вместо нормальной обработки.
+                System.err.println("Ошибка! Досвидания! 2 \n" + e);
+                closeConnection("SERVICE|101|Соединение закрыто сервером.");
 
             }
         });
@@ -130,20 +128,20 @@ public class ClientHandler implements Runnable {
 //                closeConnection("SERVICE|Клиент отключился.");
                 return true;
             case "\\list":
-                sendMessageToClient(this, "CHAT|" + Utils.makeCommandsList(commands));
+                sendMessageToClient(this, "SERVICE|101|Список команд чата" + Utils.makeCommandsList(commands));
                 return true;
             case "\\help":
-                msg = "CHAT|Привет. Это краткая помощь по чату. Выйти из чата: \" \\exit\". Получить список доступных команд чата: \" \\list\"";
+                msg = "SERVICE|101|Привет. Это краткая помощь по чату. \n Выйти из чата: \" \\exit\". \nПолучить список доступных команд чата: \" \\list\"";
                 sendMessageToClient(this, msg);
                 return true;
             case "\\users":
                 synchronized (clientHandlers) {
-                    msg = "CHAT|Cписок клиентов чата:" + Utils.getUsersList(clientHandlers);
+                    msg = "SERVICE|101|Cписок клиентов чата: " + Utils.getUsersList(clientHandlers);
                     sendMessageToClient(this, msg);
                 }
                 return true;
             default:
-                sendMessageToClient(this, "SERVICE|Команда не распознана.");
+//                sendMessageToClient(this, "SERVICE|Команда не распознана.");
                 return false;  // Команда не распознана, но соединение не должно закрываться
         }
     }
@@ -151,17 +149,26 @@ public class ClientHandler implements Runnable {
     private Message makeFormattedMessage(String message) {
 // Получаем текущее время сервера
 //      String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        int serviceCode;
         String sender;
-        String[] parts = message.split("\\|", 2); // "\\|" используется для экранирования символа |
+        String[] parts = message.split("\\|", 3); // "\\|" используется для экранирования символа |
         String category = parts[0]; // Первая часть до |
-        String content = parts[1];  // Вторая часть после |
+        try {
+            serviceCode = Integer.parseInt(parts[1]); // Вторая часть (int)
+        } catch (NumberFormatException e) {
+            // Обработка ошибки, если не удалось преобразовать в int
+            serviceCode = 101;
+            System.err.println("Ошибка: Мы где-то потеряли сервисный код.");
+
+        }
+        String content = parts[2];  // Третья часть после - сообщение
         if (category.equals("SERVICE")) {
             sender = "@InternalServerMessager";
         } else {
             sender = clientName;
         }
         ;
-        return new Message(sender, sessionId, category, content);
+        return new Message(sender, sessionId, category, serviceCode, content);
     }
 
     private void sendMessageToClient(ClientHandler targetClient, String message) throws IOException {

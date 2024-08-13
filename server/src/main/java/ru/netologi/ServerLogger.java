@@ -19,7 +19,12 @@ public class ServerLogger {
             System.err.println("Не удалось настроить логгер: " + e.getMessage());
         }
     }
+    // Метод для логирования сообщений в формате Message
+    public static void log(Message message) {
+        logger.info(message.toString());
+    }
 
+    // Метод для логирования простых строк (например, системных сообщений)
     public static void log(String message) {
         logger.info(message);
     }

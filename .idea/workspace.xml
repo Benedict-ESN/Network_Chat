@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb35df69-a988-44cf-85d9-c76f124cd849" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/shared/serviceCode.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/ru/netologi/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ru/netologi/ChatClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/commands.conf" beforeDir="false" afterPath="$PROJECT_DIR$/server/commands.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ChatServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ServerLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/netologi/ServerLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/main/java/ru/netologi/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/ru/netologi/Message.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +53,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -105,7 +113,20 @@
       <recent name="ru.netologi" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Application.Main (1)">
+    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.netologi.Main" />
+      <module name="Network-Chat.client.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.netologi.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ru.netologi.Main" />
       <module name="Network-Chat.server.main" />
@@ -146,54 +167,6 @@
             <option value=":server:test" />
             <option value="--tests" />
             <option value="&quot;ru.netologi.SettingsLoaderTest.testLoadCommands&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="SettingsLoaderTest.testLoadConfig" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":server:test" />
-            <option value="--tests" />
-            <option value="&quot;ru.netologi.SettingsLoaderTest.testLoadConfig&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="SettingsLoaderTest.testLoadConfigFileNotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":server:test" />
-            <option value="--tests" />
-            <option value="&quot;ru.netologi.SettingsLoaderTest.testLoadConfigFileNotFound&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -254,11 +227,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main (1)" />
         <item itemvalue="Application.Main" />
         <item itemvalue="Gradle.SettingsLoaderTest.testSettingsFileNotFound" />
         <item itemvalue="Gradle.SettingsLoaderTest.testLoadCommands" />
         <item itemvalue="Gradle.SettingsLoaderTest.testLoadPort" />
-        <item itemvalue="Gradle.SettingsLoaderTest.testLoadConfigFileNotFound" />
       </list>
     </recent_temporary>
   </component>
@@ -290,6 +263,11 @@
           <properties class="java.net.SocketException" package="java.net" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/server/src/main/java/ru/netologi/ClientHandler.java</url>
+          <line>86</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
