@@ -1,5 +1,6 @@
 package ru.netologi;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -102,7 +103,7 @@ public class ClientHandler implements Runnable {
                         }
                     }
                 }
-            } catch (SocketException e) {
+            } catch (EOFException | SocketException e) {
                 closeConnection("SERVICE|101|Соединение закрыто сервером.");
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -179,7 +180,7 @@ public class ClientHandler implements Runnable {
     private void broadcastMessage(String message) throws IOException {
 
 // Логируем сообщение
-//        ServerLogger.log(formattedMessage);
+        ServerLogger.log(message);
 
 // Выводим сообщение на сервере для администрирования
         System.out.println("@All: " + message);
@@ -197,6 +198,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // endOfFileException при принудительном закрытии сокета.
     private boolean isNameTaken(String name) {
         return clientHandlers.containsKey(name);
     }

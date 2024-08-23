@@ -15,19 +15,20 @@ public class ChatServer {
     private ServerSocket serverSocket = null;
     private final ConcurrentHashMap<String, ClientHandler> clientHandlers = new ConcurrentHashMap<>();
 
-    public ChatServer(int port, HashSet<String> commands) {
-        this.port = port;
-        this.commands = commands;
+    public ChatServer() throws IOException {
+
+        SettingsLoader settings = new SettingsLoader("server/settings.conf", "server/commands.conf");
+
+        this.port = settings.getPort();
+        this.commands = settings.getCommands();
+        String formattedCommands = Utils.makeCommandsList(commands);
+        System.out.println("Список команд загружен:\n" + formattedCommands);
+
     }
 
     public void start() {
-//        try (ServerSocket testSocket = new ServerSocket(port)) {
-//            // Порт свободен, можно закрыть тестовый сокет и продолжить запуск сервера
-//        } catch (IOException e) {
-//            System.err.println("Port " + port + " уже использукется. Выберете другой порт. \n" + e);
-//            return;
-//        }
-//Упростил проверку на занятый порт.
+
+
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started on port: " + port);

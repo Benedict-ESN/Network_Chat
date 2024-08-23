@@ -1,52 +1,7 @@
-���. 10, 2024 10:42:50 PM ru.netologi.ServerLogger log
-INFO: To null: SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):
-���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|200
-���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
-INFO: To 123: CHAT|Добро пожаловать в чат, 123!
-���. 10, 2024 10:42:56 PM ru.netologi.ServerLogger log
-INFO: [2024-08-10 22:42:56] @All:  123: 123 присоединился к чату.
-���. 10, 2024 10:42:58 PM ru.netologi.ServerLogger log
-INFO: [2024-08-10 22:42:58] @All:  123: : Рш
-���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|server is closing.
-���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|Соединение закрыто сервером.
-���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
-INFO: [2024-08-10 22:43:11] @All:  123: 123 покинул чат.
-���. 10, 2024 10:43:11 PM ru.netologi.ServerLogger log
-INFO: [2024-08-10 22:43:11] @All:  123: 123 покинул чат.
-���. 11, 2024 12:55:05 PM ru.netologi.ServerLogger log
-INFO: To null: SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):
-���. 11, 2024 12:55:24 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|200
-���. 11, 2024 12:55:24 PM ru.netologi.ServerLogger log
-INFO: To 123: CHAT|Добро пожаловать в чат, 123!
-���. 11, 2024 12:55:24 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:55:24] @All:  123: 123 присоединился к чату.
-���. 11, 2024 12:55:45 PM ru.netologi.ServerLogger log
-INFO: To 123: CHAT|\list
-\exit
-\help
-���. 11, 2024 12:55:45 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|Соединение закрыто сервером.
-���. 11, 2024 12:55:45 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:55:45] @All:  123: 123 покинул чат.
-���. 11, 2024 12:57:40 PM ru.netologi.ServerLogger log
-INFO: To null: SERVICE|Введите ваше имя пользователя (латинские буквы, цифры, _ или -):
-���. 11, 2024 12:57:48 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|200
-���. 11, 2024 12:57:48 PM ru.netologi.ServerLogger log
-INFO: To 123: CHAT|Добро пожаловать в чат, 123!
-���. 11, 2024 12:57:48 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:57:48] @All:  123: 123 присоединился к чату.
-���. 11, 2024 12:57:54 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:57:54] @All:  123: : Hi
-���. 11, 2024 12:59:21 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|server is closing.
-���. 11, 2024 12:59:21 PM ru.netologi.ServerLogger log
-INFO: To 123: SERVICE|Соединение закрыто сервером.
-���. 11, 2024 12:59:21 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:59:21] @All:  123: 123 покинул чат.
-���. 11, 2024 12:59:21 PM ru.netologi.ServerLogger log
-INFO: [2024-08-11 12:59:21] @All:  123: 123 покинул чат.
+2024-08-14 23:06:08 INFO ru.netologi.ServerLogger log CHAT|102|2134 присоединился к чату.
+2024-08-14 23:06:10 INFO ru.netologi.ServerLogger log CHAT|102|: df
+2024-08-23 21:49:03 INFO ru.netologi.ServerLogger log CHAT|102|234 присоединился к чату.
+2024-08-23 21:49:21 INFO ru.netologi.ServerLogger log CHAT|102|: Hi All
+2024-08-23 21:49:34 INFO ru.netologi.ServerLogger log CHAT|102|: Всё хорошо
+2024-08-23 21:49:42 INFO ru.netologi.ServerLogger log CHAT|102|: \дшые
+2024-08-23 21:50:24 INFO ru.netologi.ServerLogger log CHAT|234 покинул чат.
